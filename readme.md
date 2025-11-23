@@ -82,6 +82,48 @@ Ensure security, speed, and reliability
 Offer modular components that can be reused in other projects
 
 
+⚙️ Installation & Setup
+
+1️⃣ Clone the Project
+
+    git clone <your-repo-url>
+
+2️⃣ Move into the Project Folder
+
+    cd project-name
+
+3️⃣ Create a Virtual Environment
+    
+    python -m venv venv
+
+4️⃣ Activate the Virtual Environment
+
+Windows:-
+
+    venv\Scripts\activate
+
+
+Mac/Linux:-
+
+    source venv/bin/activate
+
+5️⃣ Install All Dependencies
+
+    pip install -r requirements.txt
+
+6️⃣ Run Database Migrations
+
+    python manage.py migrate
+
+7️⃣ Create Admin User
+
+    python manage.py createsuperuser
+
+8️⃣ Start the Server
+
+    python manage.py runserver
+
+
 🤝 Contributing
 
 Contributions are welcome!
