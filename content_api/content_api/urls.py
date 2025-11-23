@@ -17,9 +17,29 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from wagtail.api.v2.router import WagtailAPIRouter
+from wagtail.api.v2.views import PagesAPIViewSet
+
+api_router = WagtailAPIRouter('wagtailapi')
+api_router.register_endpoint('pages', PagesAPIViewSet)
 
 urlpatterns = [
+   # Django admin
     path("admin/", admin.site.urls),
-    path("", include("CONTENT_APP.urls")),
+
+    # Wagtail admin
+    path("cms/", include("wagtail.admin.urls")),
+
+    # Wagtail documents
+    path("documents/", include(wagtaildocs_urls)),
+
+    # Wagtail API
+    path("api/v2/", api_router.urls),
+
+    # Your custom API routes (OPTIONAL)
+    path("api/", include("CONTENT_APP.urls")),  
+
+    # IMPORTANT: Wagtail page serving MUST BE LAST
+    path("", include(wagtail_urls)),
 ]
 

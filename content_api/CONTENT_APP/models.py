@@ -2,7 +2,9 @@ from django.db import models
 
 # Create your models here.
 from django.contrib.auth.models import AbstractUser
-
+from wagtail.models import Page
+from wagtail.fields import RichTextField
+from wagtail.admin.panels import FieldPanel
 
 class CustomUser(AbstractUser):
     bio = models.TextField(blank=True, null=True)
@@ -11,3 +13,9 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+class ContentPage(Page):
+    body = RichTextField()
+
+    content_panels = Page.content_panels + [
+        FieldPanel('body'),
+    ]
