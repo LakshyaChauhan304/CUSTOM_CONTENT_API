@@ -56,6 +56,9 @@ INSTALLED_APPS = [
     "rest_framework",
 ]
 WAGTAIL_SITE_NAME = "ContentAPI"
+AUTH_USER_MODEL = "CONTENT_APP.CustomUser"
+
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -139,4 +142,3 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-AUTH_USER_MODEL = "CONTENT_APP.CustomUser"
