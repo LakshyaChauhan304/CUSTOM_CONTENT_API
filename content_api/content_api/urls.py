@@ -16,30 +16,24 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include,re_path
+from wagtail import urls as wagtail_urls
+from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.api.v2.router import WagtailAPIRouter
 from wagtail.api.v2.views import PagesAPIViewSet
 
 api_router = WagtailAPIRouter('wagtailapi')
 api_router.register_endpoint('pages', PagesAPIViewSet)
 
-urlpatterns = [
-   # Django admin
-    path("admin/", admin.site.urls),
+urlpatterns =[ 
+    path('django-admin/', admin.site.urls),
+    path('content/', include('CONTENT_APP.urls')),
+    path('admin/', include(wagtailadmin_urls)),
+    path('documents/', include('wagtail.documents.urls')),
+    # API
+    path('api/v2/', api_router.urls),
 
-    # Wagtail admin
-    path("cms/", include("wagtail.admin.urls")),
-
-    # Wagtail documents
-    path("documents/", include(wagtaildocs_urls)),
-
-    # Wagtail API
-    path("api/v2/", api_router.urls),
-
-    # Your custom API routes (OPTIONAL)
-    path("api/", include("CONTENT_APP.urls")),  
-
-    # IMPORTANT: Wagtail page serving MUST BE LAST
-    path("", include(wagtail_urls)),
+    # Wagtail page serving
+    re_path(r'', include(wagtail_urls)),
 ]
 

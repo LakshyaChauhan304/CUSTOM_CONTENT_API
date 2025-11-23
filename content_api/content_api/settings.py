@@ -50,10 +50,12 @@ INSTALLED_APPS = [
     "wagtail.admin",
     "wagtail",
     "wagtail.locales",
+    "wagtail.api.v2",
     "modelcluster",
     "taggit",
     "rest_framework",
 ]
+WAGTAIL_SITE_NAME = "ContentAPI"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
