@@ -1,0 +1,43 @@
+{% extends "CONTENT_APP/base.html" %}
+{% block content %}
+<h2>Add Content Item</h2>
+
+<form id="addItemForm">
+  <label>Title</label>
+  <input name="title" required />
+
+  <label>Body</label>
+  <textarea name="body" rows="5"></textarea>
+
+  <button type="submit">Create</button>
+</form>
+
+<h3>API Response</h3>
+<pre id="addItemResult"></pre>
+
+<script>
+document.getElementById('addItemForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = e.target;
+  const payload = {
+    title: f.title.value,
+    body: f.body.value
+  };
+
+  const headers = {'Content-Type': 'application/json'};
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    headers['Authorization'] = 'Token ' + token;
+  }
+
+  const res = await fetch('/content/api/items/', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+  document.getElementById('addItemResult').textContent = JSON.stringify(data, null, 2);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "CONTENT_APP/base.html" %}
+{% block content %}
+<h2>Login</h2>
+
+<form id="loginForm">
+  <label>Username</label>
+  <input name="username" required />
+
+  <label>Password</label>
+  <input name="password" type="password" required />
+
+  <button type="submit">Login</button>
+</form>
+
+<h3>Status</h3>
+<div id="loginStatus"></div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = e.target;
+  const payload = {
+    username: f.username.value,
+    password: f.password.value
+  };
+
+  const res = await fetch('/content/login/', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+
+  if (data.token) {
+    localStorage.setItem('authToken', data.token);
+    document.getElementById('loginStatus').innerHTML =
+      '<span class="success">Logged in as ' + (data.username || payload.username) + '</span>';
+  } else {
+    document.getElementById('loginStatus').innerHTML =
+      '<span class="error">' + JSON.stringify(data) + '</span>';
+  }
+});
+</script>
+{% endblock %}

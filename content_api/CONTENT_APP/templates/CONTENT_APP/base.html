@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Content API Mini CMS</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; background: #fafafa; }
+    nav a { margin-right: 12px; }
+    input, textarea { width: 100%; padding: 8px; margin: 6px 0; box-sizing: border-box; }
+    button { padding: 8px 14px; cursor: pointer; }
+    .card { background: #fff; border: 1px solid #ddd; padding: 12px; margin: 10px 0; border-radius: 6px; }
+    .error { color: red; }
+    .success { color: green; }
+    pre { background: #222; color: #eee; padding: 10px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/content/ui/register/">Register</a>
+    <a href="/content/ui/login/">Login</a>
+    <a href="/content/ui/items/">Items</a>
+    <a href="/content/ui/add-item/">Add Item</a>
+  </nav>
+  <hr/>
+  {% block content %}{% endblock %}
+</body>
+</html>

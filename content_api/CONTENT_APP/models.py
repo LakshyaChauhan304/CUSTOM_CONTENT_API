@@ -6,6 +6,8 @@ from wagtail.admin.panels import FieldPanel
 from wagtail.api import APIField
 
 
+
+
 class CustomUser(AbstractUser):
     bio = models.TextField(blank=True, null=True)
     birth_date = models.DateField(blank=True, null=True)
@@ -32,3 +34,11 @@ class DemoPage(Page):
         APIField("subtitle"),
         APIField("body"),
     ]
+
+class ContentItem(models.Model):
+    title = models.CharField(max_length=255)
+    body = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title

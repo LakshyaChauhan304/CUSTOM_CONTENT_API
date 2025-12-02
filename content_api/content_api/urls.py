@@ -15,10 +15,9 @@ api_router.register_endpoint('pages', PagesAPIViewSet)
 
 urlpatterns = [
     path('django-admin/', admin.site.urls),
-    path('content/', include('CONTENT_APP.urls')),       # match folder name case
-    path('admin/', include(wagtailadmin_urls)),          # Wagtail admin
+    path('content/', include('CONTENT_APP.urls')),   # all app routes
+    path('admin/', include(wagtailadmin_urls)),      # Wagtail admin
     path('documents/', include(wagtaildocs_urls)),
     path('api/v2/', api_router.urls),
-    re_path(r'', include(wagtail_urls)),
+    re_path(r'', include(wagtail_urls)),             # Wagtail front-end pages
 ]
-
