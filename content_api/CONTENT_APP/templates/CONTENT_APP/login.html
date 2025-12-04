@@ -1,45 +1,131 @@
 {% extends "CONTENT_APP/base.html" %}
+{% load static %}
+
 {% block content %}
-<h2>Login</h2>
 
-<form id="loginForm">
-  <label>Username</label>
-  <input name="username" required />
+<style>
+body {
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    background: url("{% static 'icons/clouds-bg.jpg' %}") no-repeat center center/cover;
+    height: 100vh;
+}
 
-  <label>Password</label>
-  <input name="password" type="password" required />
+/* Centering the card */
+.login-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
 
-  <button type="submit">Login</button>
-</form>
+/* Glassmorphism Card */
+.login-card {
+    width: 380px;
+    padding: 35px 40px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(13px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.20);
+    text-align: center;
+    animation: fadeIn 0.8s ease-out;
+}
 
-<h3>Status</h3>
-<div id="loginStatus"></div>
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px);}
+    to { opacity: 1; transform: translateY(0);}
+}
 
-<script>
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const f = e.target;
-  const payload = {
-    username: f.username.value,
-    password: f.password.value
-  };
+.login-card h2 {
+    margin: 10px 0;
+    font-weight: 600;
+}
 
-  const res = await fetch('/content/login/', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(payload)
-  });
+.login-card p {
+    margin-bottom: 22px;
+    font-size: 14px;
+    color: #444;
+}
 
-  const data = await res.json();
+/* Fields */
+.login-card input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 14px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: 0.2s;
+}
 
-  if (data.token) {
-    localStorage.setItem('authToken', data.token);
-    document.getElementById('loginStatus').innerHTML =
-      '<span class="success">Logged in as ' + (data.username || payload.username) + '</span>';
-  } else {
-    document.getElementById('loginStatus').innerHTML =
-      '<span class="error">' + JSON.stringify(data) + '</span>';
-  }
-});
-</script>
+.login-card input:focus {
+    border-color: #7b4bff;
+    box-shadow: 0 0 8px rgba(123, 75, 255, 0.3);
+}
+
+/* Button */
+.btn-login {
+    width: 100%;
+    margin-top: 18px;
+    padding: 13px;
+    background: #1a1a1a;
+    border-radius: 12px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-login:hover {
+    background: #000;
+    transform: translateY(-2px);
+}
+
+/* Small OAuth icons */
+.oauth-row {
+    margin-top: 18px;
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+}
+
+.oauth-row img {
+    width: 28px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.oauth-row img:hover {
+    transform: scale(1.15);
+}
+</style>
+
+<div class="login-wrapper">
+
+    <div class="login-card">
+
+        <img src="{% static 'icons/login-icon.svg' %}" width="42" style="margin-bottom: 12px;">
+
+        <h2>Sign in with email</h2>
+        <p>Access your dashboard and manage everything from one place.</p>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {{ form.username_or_email }}
+            {{ form.password }}
+
+            <button class="btn-login" type="submit">Get Started</button>
+        </form>
+        <p>Log into your account using one of these</p>
+        <div class="oauth-row">
+            <img src="{% static 'icons/google.svg' %}">
+            <img src="{% static 'icons/facebook.svg' %}">
+            <img src="{% static 'icons/apple.svg' %}">
+        </div>
+
+    </div>
+
+</div>
+
 {% endblock %}

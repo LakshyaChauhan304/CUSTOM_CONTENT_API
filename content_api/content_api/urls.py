@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
+from CONTENT_APP.views import home,signup
 
 # Wagtail imports
 from wagtail import urls as wagtail_urls
@@ -19,5 +20,11 @@ urlpatterns = [
     path('admin/', include(wagtailadmin_urls)),      # Wagtail admin
     path('documents/', include(wagtaildocs_urls)),
     path('api/v2/', api_router.urls),
-    re_path(r'', include(wagtail_urls)),             # Wagtail front-end pages
+                 # Wagtail front-end pages
+    path('admin/', admin.site.urls),
+    path('', home,name='home'),
+    path('signup/',signup,name="signup"),
+    
+    
+    re_path(r'', include(wagtail_urls)),
 ]

@@ -1,5 +1,10 @@
-from django.contrib.auth import authenticate
-from django.shortcuts import render
+from django.contrib.auth import authenticate, login as auth_login 
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+
+from .forms import SignUpForm,LoginForm
 
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
@@ -69,15 +74,45 @@ class ContentItemViewSet(viewsets.ModelViewSet):
 # UI Views (HTML pages)
 # --------------------------
 
-def ui_register(request):
-    return render(request, "CONTENT_APP/register.html")
+def home(request):
+    return render(request,"CONTENT_APP/home.html")
 
-def ui_login(request):
-    return render(request, "CONTENT_APP/login.html")
+def signup(request):
+    form = SignUpForm(request.POST or None)
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            return redirect("ui_login")
+    return render(request,"CONTENT_APP/signup.html",{"form": form})
 
-def ui_items(request):
-    return render(request, "CONTENT_APP/items.html")
+def login_view(request):
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            identifier = form.cleaned_data["username_or_email"]
+            password = form.cleaned_data["password"]
 
-def ui_add_item(request):
-    return render(request, "CONTENT_APP/add_item.html")
+            # Try username first
+            from django.contrib.auth.models import User
+            user = None
 
+            if User.objects.filter(username=identifier).exists():
+                user = authenticate(request, username=identifier, password=password)
+            elif User.objects.filter(email=identifier).exists():
+                username = User.objects.get(email=identifier).username
+                user = authenticate(request, username=username, password=password)
+
+            if user:
+                login_view(request, user)
+                return redirect("ui_items")  # or any page
+            else:
+                form.add_error(None, "Invalid credentials")
+    else:
+        form = LoginForm()
+
+    return render(request, "CONTENT_APP/login.html", {"form": form})
+
+
+def items_list(request):
+    items = ContentItem.objects.all().select_related("user")
+    return render(request, "CONTENT_APP/items.html", {"items": items})

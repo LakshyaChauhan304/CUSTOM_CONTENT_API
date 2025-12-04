@@ -15,10 +15,19 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+STATIC_URL = '/static'
+
+STATICFILES_DIRS=[
+    BASE_DIR/ "static",
+    BASE_DIR / "CONTENT_APP/static",
+]
+
+STATIC_ROOT = BASE_DIR/ "staticfiles"
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],   # <--- ADD THIS
+        "DIRS": [BASE_DIR.parent / "CONTENT_APP" / "templates"],   # <--- ADD THIS
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

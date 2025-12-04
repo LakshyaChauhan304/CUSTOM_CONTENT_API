@@ -1,55 +1,170 @@
 {% extends "CONTENT_APP/base.html" %}
+{% load static %}
 {% block content %}
-<h2>Content Items</h2>
-<div id="itemsContainer">Loading items…</div>
 
-<h2>Wagtail Demo Pages</h2>
-<div id="demoPagesContainer">Loading demo pages…</div>
 
-<script>
-async function loadItems() {
-  const res = await fetch('/content/api/items/');
-  const data = await res.json();
-  const container = document.getElementById('itemsContainer');
+<link rel="stylesheet" href="{% static 'css/items.css' %}">
 
-  const items = Array.isArray(data) ? data : (data.results || []);
-
-  if (!items.length) {
-    container.innerHTML = '<p>No items yet.</p>';
-    return;
-  }
-
-  container.innerHTML = items.map(item => `
-    <div class="card">
-      <h3>${item.title}</h3>
-      <p>${item.body || ''}</p>
-      <small>id: ${item.id}</small>
-    </div>
-  `).join('');
+<style>
+/* ---- Container ---- */
+.items-wrapper {
+    width: 100%;
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
 }
 
-async function loadDemoPages() {
-  const res = await fetch('/api/v2/pages/?type=CONTENT_APP.DemoPage&fields=title,subtitle,body');
-  const data = await res.json();
-  const pages = data.items || [];
-  const container = document.getElementById('demoPagesContainer');
-
-  if (!pages.length) {
-    container.innerHTML = '<p>No DemoPages published yet.</p>';
-    return;
-  }
-
-  container.innerHTML = pages.map(page => `
-    <div class="card">
-      <h3>${page.title}</h3>
-      <h4>${page.subtitle || ''}</h4>
-      <div>${page.body || ''}</div>
-      <small>id: ${page.id}</small>
-    </div>
-  `).join('');
+/* ---- Table Styling ---- */
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    animation: fadeIn 0.4s ease-in-out;
 }
 
-loadItems();
-loadDemoPages();
-</script>
+.items-table th {
+    background: #f0f2ff;
+    padding: 14px;
+    font-weight: 700;
+    color: #333;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.items-table td {
+    padding: 14px;
+    border-bottom: 1px solid #eee;
+    transition: 0.25s;
+}
+
+/* ---- Row Hover ---- */
+.items-table tbody tr:hover {
+    background: #f9f9ff;
+    transform: scale(1.01);
+}
+
+/* ---- Edit/Delete Icons ---- */
+.action-btn {
+    cursor: pointer;
+    padding: 8px;
+    margin-right: 8px;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.action-btn.edit {
+    background: #e0e7ff;
+    color: #4a57f7;
+}
+
+.action-btn.delete {
+    background: #ffe2e2;
+    color: #e63939;
+}
+
+.action-btn:hover {
+    transform: scale(1.1);
+}
+
+/* ---- Search Field ---- */
+#searchBox {
+    padding: 12px 16px;
+    width: 320px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin-bottom: 18px;
+    transition: 0.25s;
+}
+
+#searchBox:focus {
+    border-color: #4a57f7;
+    box-shadow: 0px 0px 6px rgba(74, 87, 247, 0.4);
+}
+
+/* ---- Fade animation ---- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Mobile View ---- */
+@media (max-width: 700px) {
+    .items-table thead {
+        display: none;
+    }
+    .items-table tr {
+        display: block;
+        margin-bottom: 15px;
+        background: white;
+        padding: 10px;
+        border-radius: 10px;
+        box-shadow: 0px 2px 8px rgba(0,0,0,0.08);
+    }
+    .items-table td {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 6px;
+        border: none;
+    }
+}
+</style>
+
+<div class="page-header">
+    <h1>Content Items</h1>
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <h2 id="statTotal">0</h2>
+            <p>Total Items</p>
+        </div>
+        <div class="stat-card">
+            <h2 id="statToday">0</h2>
+            <p>Added Today</p>
+        </div>
+        <div class="stat-card">
+            <h2 id="statUsers">0</h2>
+            <p>Unique Users</p>
+        </div>
+    </div>
+</div>
+
+<!-- Search + Filters -->
+<div class="toolbar">
+    <input type="text" id="searchBox" placeholder="🔎 Search items…">
+
+    <select id="filterUser">
+        <option value="">Filter by User</option>
+    </select>
+
+    <select id="filterDate">
+        <option value="">Created Date</option>
+        <option value="today">Today</option>
+        <option value="7">Last 7 days</option>
+        <option value="30">Last 30 days</option>
+    </select>
+</div>
+
+<!-- Items Table -->
+<div class="table-wrapper">
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>User</th>
+                <th>Created</th>
+                <th class="actions-col">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="itemsBody">
+            <tr><td colspan="5">Loading…</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="{% static 'js/items.js' %}"></script>
+
 {% endblock %}
+
