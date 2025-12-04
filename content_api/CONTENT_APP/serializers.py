@@ -57,5 +57,3 @@ class ContentItemSerializer(serializers.ModelSerializer):
         model = ContentItem
         fields = ['id', 'title', 'body', 'created', 'user_username']
         fields = "__all__"
-
-

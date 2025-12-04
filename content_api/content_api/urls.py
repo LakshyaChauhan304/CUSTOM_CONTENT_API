@@ -21,7 +21,7 @@ urlpatterns = [
     path('documents/', include(wagtaildocs_urls)),
     path('api/v2/', api_router.urls),
                  # Wagtail front-end pages
-    path('admin/', admin.site.urls),
+
     path('', home,name='home'),
     path('signup/',signup,name="signup"),
     

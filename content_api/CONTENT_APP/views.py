@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login as auth_login 
 from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
@@ -82,7 +82,7 @@ def signup(request):
     if request.method == "POST":
         if form.is_valid():
             form.save()
-            return redirect("ui_login")
+            return redirect("login")
     return render(request,"CONTENT_APP/signup.html",{"form": form})
 
 def login_view(request):
@@ -92,19 +92,21 @@ def login_view(request):
             identifier = form.cleaned_data["username_or_email"]
             password = form.cleaned_data["password"]
 
-            # Try username first
-            from django.contrib.auth.models import User
+            User = get_user_model()
             user = None
 
             if User.objects.filter(username=identifier).exists():
                 user = authenticate(request, username=identifier, password=password)
             elif User.objects.filter(email=identifier).exists():
-                username = User.objects.get(email=identifier).username
-                user = authenticate(request, username=username, password=password)
+                try:
+                    username = User.objects.get(email=identifier).username
+                    user = authenticate(request, username=username, password=password)
+                except User.MultipleObjectsReturned:
+                     form.add_error(None, "Multiple users with this email found.")
 
             if user:
-                login_view(request, user)
-                return redirect("ui_items")  # or any page
+                auth_login(request, user)
+                return redirect("items_list")
             else:
                 form.add_error(None, "Invalid credentials")
     else:
@@ -131,4 +133,3 @@ def add_item(request):
         form = ContentItemForm()
 
     return render(request, "CONTENT_APP/add_item.html", {"form": form})
-

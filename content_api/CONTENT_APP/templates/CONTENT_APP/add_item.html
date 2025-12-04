@@ -1,64 +1,41 @@
 {% extends "CONTENT_APP/base.html" %}
 {% load static %}
 
+{% block title %}New Item{% endblock %}
+
 {% block content %}
+<div class="flex justify-center fade-in">
+    <div class="card" style="width: 100%; max-width: 800px;">
+        <h2 style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">Create New Content</h2>
+        
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Title</label>
+                <input type="text" name="title" placeholder="Enter a descriptive title..." required style="font-size: 1.1rem; padding: 1rem;">
+            </div>
 
-<link rel="stylesheet" href="{% static 'css/add_item.css' %}">
-<script defer src="{% static 'js/add_item.js' %}"></script>
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Content Body</label>
+                <textarea name="body" rows="10" placeholder="Write your content here..." style="font-family: monospace; line-height: 1.6;"></textarea>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; text-align: right;">Markdown supported</p>
+            </div>
 
-<div class="editor-page">
-
-    <!-- 🌙 Dark Mode Toggle -->
-    <div class="dark-toggle" onclick="toggleDarkMode()">
-        <div class="toggle-circle"></div>
-    </div>
-
-    <div class="editor-wrapper">
-
-        <!-- 📌 Sidebar (like WordPress) -->
-        <aside class="editor-sidebar">
-            <h3>Tools</h3>
-
-            <button onclick="insertHeading()" class="side-btn">Add Heading</button>
-            <button onclick="insertDivider()" class="side-btn">Divider</button>
-            <button onclick="insertChecklist()" class="side-btn">Checklist</button>
-            <button onclick="insertQuote()" class="side-btn">Quote</button>
-            <button onclick="insertWarning()" class="side-btn warn">Warning Box</button>
-
-            <hr>
-
-            <h4>Document</h4>
-            <p><strong>Word Count:</strong> <span id="wordCount">0</span></p>
-            <p><strong>Status:</strong> <span id="saveStatus">Saved</span></p>
-
-        </aside>
-
-        <!-- ⭐ MAIN EDITOR AREA -->
-        <main class="editor-main">
-
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-
-                <!-- Title -->
-                <input type="text" name="title" class="title-input"
-                       placeholder="Enter the title here...">
-
-                <!-- Rich Text Editor -->
-                <textarea name="body" id="editorArea"
-                          placeholder="Start writing your content..."></textarea>
-
-                <!-- 📷 Drag & Drop Media Upload -->
-                <div id="dropzone" class="media-dropzone">
-                    <p>📁 Drag & Drop to upload media<br>or click to browse</p>
+            <div style="margin-bottom: 2rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Media Attachment</label>
+                <div style="border: 2px dashed var(--border); border-radius: var(--radius-md); padding: 2rem; text-align: center; background: #f9fafb; cursor: pointer; transition: 0.2s;" onclick="document.getElementById('mediaInput').click()">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📁</div>
+                    <p style="margin: 0;">Click to upload or drag and drop</p>
                     <input type="file" id="mediaInput" name="media" hidden>
                 </div>
+            </div>
 
-                <button class="publish-btn">Publish</button>
-            </form>
-
-        </main>
-
+            <div class="flex justify-end gap-4">
+                <a href="{% url 'items_list' %}" class="btn btn-outline">Cancel</a>
+                <button class="btn btn-primary" type="submit" style="min-width: 150px;">Publish Item</button>
+            </div>
+        </form>
     </div>
 </div>
-
 {% endblock %}

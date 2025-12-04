@@ -1,131 +1,54 @@
 {% extends "CONTENT_APP/base.html" %}
 {% load static %}
 
+{% block title %}Login{% endblock %}
+
 {% block content %}
-
-<style>
-body {
-    margin: 0;
-    font-family: "Poppins", sans-serif;
-    background: url("{% static 'icons/clouds-bg.jpg' %}") no-repeat center center/cover;
-    height: 100vh;
-}
-
-/* Centering the card */
-.login-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-}
-
-/* Glassmorphism Card */
-.login-card {
-    width: 380px;
-    padding: 35px 40px;
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.35);
-    backdrop-filter: blur(13px);
-    box-shadow: 0 12px 35px rgba(0,0,0,0.20);
-    text-align: center;
-    animation: fadeIn 0.8s ease-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px);}
-    to { opacity: 1; transform: translateY(0);}
-}
-
-.login-card h2 {
-    margin: 10px 0;
-    font-weight: 600;
-}
-
-.login-card p {
-    margin-bottom: 22px;
-    font-size: 14px;
-    color: #444;
-}
-
-/* Fields */
-.login-card input {
-    width: 100%;
-    padding: 12px;
-    margin-top: 14px;
-    border-radius: 12px;
-    border: 1px solid #ccc;
-    outline: none;
-    transition: 0.2s;
-}
-
-.login-card input:focus {
-    border-color: #7b4bff;
-    box-shadow: 0 0 8px rgba(123, 75, 255, 0.3);
-}
-
-/* Button */
-.btn-login {
-    width: 100%;
-    margin-top: 18px;
-    padding: 13px;
-    background: #1a1a1a;
-    border-radius: 12px;
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.btn-login:hover {
-    background: #000;
-    transform: translateY(-2px);
-}
-
-/* Small OAuth icons */
-.oauth-row {
-    margin-top: 18px;
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-}
-
-.oauth-row img {
-    width: 28px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.oauth-row img:hover {
-    transform: scale(1.15);
-}
-</style>
-
-<div class="login-wrapper">
-
-    <div class="login-card">
-
-        <img src="{% static 'icons/login-icon.svg' %}" width="42" style="margin-bottom: 12px;">
-
-        <h2>Sign in with email</h2>
-        <p>Access your dashboard and manage everything from one place.</p>
-
-        <form method="POST">
-            {% csrf_token %}
-
-            {{ form.username_or_email }}
-            {{ form.password }}
-
-            <button class="btn-login" type="submit">Get Started</button>
-        </form>
-        <p>Log into your account using one of these</p>
-        <div class="oauth-row">
-            <img src="{% static 'icons/google.svg' %}">
-            <img src="{% static 'icons/facebook.svg' %}">
-            <img src="{% static 'icons/apple.svg' %}">
+<div class="auth-wrapper">
+    <div class="auth-card text-center fade-in">
+        <div style="margin-bottom: 1.5rem;">
+            <div style="width: 50px; height: 50px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: white; font-size: 1.5rem;">
+                🔐
+            </div>
         </div>
+        
+        <h2 style="margin-bottom: 0.5rem;">Welcome Back</h2>
+        <p style="margin-bottom: 2rem;">Sign in to continue to your dashboard</p>
 
+        <form method="POST" style="text-align: left;">
+            {% csrf_token %}
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Username or Email</label>
+                {{ form.username_or_email }}
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Password</label>
+                {{ form.password }}
+            </div>
+
+            {% if form.errors %}
+                <div class="card" style="padding: 0.75rem; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; margin-bottom: 1.5rem;">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <p style="margin: 0; font-size: 0.9rem;">{{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                            <p style="margin: 0; font-size: 0.9rem;">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <button class="btn btn-primary" type="submit" style="width: 100%;">Sign In</button>
+        </form>
+        
+        <p style="margin-top: 1.5rem; font-size: 0.9rem;">
+            Don't have an account? <a href="{% url 'signup' %}" class="text-primary" style="font-weight: 600;">Sign up</a>
+        </p>
     </div>
-
 </div>
-
 {% endblock %}

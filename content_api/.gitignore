@@ -1,0 +1,9 @@
+django_venv/
+db.sqlite3
+__pycache__/
+*.pyc
+*.log
+migrate_log.txt
+make_log.txt
+staticfiles/
+media/

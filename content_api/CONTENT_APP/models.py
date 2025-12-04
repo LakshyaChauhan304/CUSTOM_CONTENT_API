@@ -15,6 +15,7 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+
 class ContentPage(Page):
     body = RichTextField()
 
@@ -41,5 +42,3 @@ class ContentItem(models.Model):
     body = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-

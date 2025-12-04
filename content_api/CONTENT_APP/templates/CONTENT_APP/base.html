@@ -1,28 +1,61 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Content API Mini CMS</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <style>
-    body { font-family: Arial, sans-serif; margin: 24px; background: #fafafa; }
-    nav a { margin-right: 12px; }
-    input, textarea { width: 100%; padding: 8px; margin: 6px 0; box-sizing: border-box; }
-    button { padding: 8px 14px; cursor: pointer; }
-    .card { background: #fff; border: 1px solid #ddd; padding: 12px; margin: 10px 0; border-radius: 6px; }
-    .error { color: red; }
-    .success { color: green; }
-    pre { background: #222; color: #eee; padding: 10px; overflow-x: auto; }
-  </style>
+  <title>{% block title %}Content API CMS{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Custom CSS -->
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-  <nav>
-    <a href="/content/signup/">Register</a>
-     <a href="/content/login/">Login</a>
-    <a href="/content/items/">Items</a>
-    <a href="/content/add-item/">Add Item</a> 
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container flex justify-between items-center">
+      <a href="{% url 'home' %}" class="nav-brand">ContentCMS</a>
+      
+      <div class="nav-links flex items-center gap-4">
+        {% if user.is_authenticated %}
+            <a href="{% url 'items_list' %}">Dashboard</a>
+            <a href="{% url 'add_item' %}" class="btn btn-primary" style="padding: 0.5rem 1rem;">+ New Item</a>
+            <!-- Logout would typically be a form or link -->
+            <span style="margin-left: 1rem; color: var(--text-muted);">Hi, {{ user.username }}</span>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'signup' %}" class="btn btn-primary">Get Started</a>
+        {% endif %}
+      </div>
+    </div>
   </nav>
-  <hr/>
-  {% block content %}{% endblock %}
+
+  <!-- Main Content -->
+  <main class="container" style="min-height: 80vh; padding-top: 2rem; padding-bottom: 2rem;">
+    {% if messages %}
+        <div style="margin-bottom: 1rem;">
+            {% for message in messages %}
+                <div class="card" style="padding: 1rem; background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer style="background: white; border-top: 1px solid var(--border); padding: 2rem 0; margin-top: auto;">
+    <div class="container text-center">
+      <p>&copy; {% now "Y" %} ContentCMS. Built with Django & Premium CSS.</p>
+    </div>
+  </footer>
+
 </body>
 </html>
