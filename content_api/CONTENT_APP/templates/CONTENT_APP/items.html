@@ -2,169 +2,243 @@
 {% load static %}
 {% block content %}
 
-
-<link rel="stylesheet" href="{% static 'css/items.css' %}">
-
 <style>
-/* ---- Container ---- */
-.items-wrapper {
-    width: 100%;
-    max-width: 1100px;
-    margin: auto;
-    padding: 20px;
+/* ------------------ PAGE LAYOUT ------------------ */
+body {
+    font-family: "Poppins", sans-serif;
+    background: #f5f7ff;
+    margin: 0;
 }
 
-/* ---- Table Styling ---- */
+/* ---------- DASHBOARD STATS ---------- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    padding: 22px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.07);
+    text-align: center;
+    transition: 0.25s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-title {
+    font-size: 14px;
+    color: #777;
+}
+
+.stat-value {
+    font-size: 28px;
+    margin-top: 8px;
+    font-weight: 700;
+    color: #4a6cf7;
+}
+
+/* ---------- SEARCH BAR ---------- */
+#searchBox {
+    width: 300px;
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+/* ---------- TABLE ---------- */
 .items-table {
     width: 100%;
     border-collapse: collapse;
     background: white;
-    border-radius: 12px;
+    border-radius: 14px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    animation: fadeIn 0.4s ease-in-out;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.12);
 }
 
 .items-table th {
-    background: #f0f2ff;
+    text-align: left;
     padding: 14px;
-    font-weight: 700;
-    color: #333;
-    border-bottom: 1px solid #e0e0e0;
+    background: #f1f3ff;
+    font-weight: 600;
 }
 
 .items-table td {
     padding: 14px;
-    border-bottom: 1px solid #eee;
-    transition: 0.25s;
+    border-top: 1px solid #eee;
 }
 
-/* ---- Row Hover ---- */
-.items-table tbody tr:hover {
-    background: #f9f9ff;
-    transform: scale(1.01);
-}
-
-/* ---- Edit/Delete Icons ---- */
-.action-btn {
-    cursor: pointer;
-    padding: 8px;
-    margin-right: 8px;
+/* ---------- BUTTONS ---------- */
+.edit-btn, .delete-btn {
+    padding: 7px 12px;
     border-radius: 6px;
-    transition: 0.2s;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
 }
 
-.action-btn.edit {
-    background: #e0e7ff;
-    color: #4a57f7;
+.edit-btn {
+    background: #4a6cf7;
+    color: white;
+    margin-right: 8px;
 }
 
-.action-btn.delete {
-    background: #ffe2e2;
-    color: #e63939;
+.delete-btn {
+    background: #ef4444;
+    color: white;
 }
 
-.action-btn:hover {
-    transform: scale(1.1);
-}
+/* Hover animations */
+.edit-btn:hover { transform: scale(1.05); }
+.delete-btn:hover { transform: scale(1.05); }
 
-/* ---- Search Field ---- */
-#searchBox {
-    padding: 12px 16px;
-    width: 320px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    margin-bottom: 18px;
-    transition: 0.25s;
+/* Fade-in animation */
+.fade-in {
+    animation: fadeIn 0.45s ease-in-out;
 }
-
-#searchBox:focus {
-    border-color: #4a57f7;
-    box-shadow: 0px 0px 6px rgba(74, 87, 247, 0.4);
-}
-
-/* ---- Fade animation ---- */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ---- Mobile View ---- */
-@media (max-width: 700px) {
-    .items-table thead {
-        display: none;
-    }
-    .items-table tr {
-        display: block;
-        margin-bottom: 15px;
-        background: white;
-        padding: 10px;
-        border-radius: 10px;
-        box-shadow: 0px 2px 8px rgba(0,0,0,0.08);
-    }
-    .items-table td {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 6px;
-        border: none;
-    }
+
+.add-btn {
+    background: #4f46e5;
+    padding: 10px 16px;
+    border-radius: 10px;
+    color: white;
+    text-decoration: none;
+    float: right;
+    margin-bottom: 20px;
 }
 </style>
 
-<div class="page-header">
-    <h1>Content Items</h1>
+<a href="{% url 'add_item' %}" class="add-btn">+ Add Item</a>
 
-    <div class="stats-row">
-        <div class="stat-card">
-            <h2 id="statTotal">0</h2>
-            <p>Total Items</p>
-        </div>
-        <div class="stat-card">
-            <h2 id="statToday">0</h2>
-            <p>Added Today</p>
-        </div>
-        <div class="stat-card">
-            <h2 id="statUsers">0</h2>
-            <p>Unique Users</p>
-        </div>
+
+<h1 style="margin-bottom: 25px;">📄 Content Items</h1>
+
+<!-- -------------------- DASHBOARD STATS -------------------- -->
+<div class="stats-grid fade-in">
+    <div class="stat-card">
+        <div class="stat-title">Total Items</div>
+        <div id="totalItems" class="stat-value">0</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-title">Completed</div>
+        <div id="completedItems" class="stat-value">0</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-title">In Progress</div>
+        <div id="progressItems" class="stat-value">0</div>
     </div>
 </div>
 
-<!-- Search + Filters -->
-<div class="toolbar">
-    <input type="text" id="searchBox" placeholder="🔎 Search items…">
+<!-- -------------------- SEARCH BAR -------------------- -->
+<input id="searchBox" type="text" placeholder="Search items…">
 
-    <select id="filterUser">
-        <option value="">Filter by User</option>
-    </select>
+<!-- -------------------- TABLE -------------------- -->
+<table id="itemsTable" class="items-table fade-in">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>User</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="itemsBody">
+        <tr><td colspan="6">Loading…</td></tr>
+    </tbody>
+</table>
 
-    <select id="filterDate">
-        <option value="">Created Date</option>
-        <option value="today">Today</option>
-        <option value="7">Last 7 days</option>
-        <option value="30">Last 30 days</option>
-    </select>
-</div>
+<script>
+/* --------------------------------------
+   LOAD ITEMS FROM API
+-------------------------------------- */
+async function loadItems() {
+    const res = await fetch('/content/api/items/');
+    const data = await res.json();
 
-<!-- Items Table -->
-<div class="table-wrapper">
-    <table class="items-table">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>User</th>
-                <th>Created</th>
-                <th class="actions-col">Actions</th>
-            </tr>
-        </thead>
-        <tbody id="itemsBody">
-            <tr><td colspan="5">Loading…</td></tr>
-        </tbody>
-    </table>
-</div>
+    const items = Array.isArray(data) ? data : (data.results || []);
+    const tbody = document.getElementById('itemsBody');
 
-<script src="{% static 'js/items.js' %}"></script>
+    if (!items.length) {
+        tbody.innerHTML = "<tr><td colspan='6'>No items found.</td></tr>";
+        return;
+    }
+
+    let completed = 0;
+    let in_progress = 0;
+
+    tbody.innerHTML = items.map(item => {
+        const status = item.status || "in-progress";
+
+        if (status === "completed") completed++;
+        else in_progress++;
+
+        return `
+        <tr class="fade-in">
+            <td>${item.title}</td>
+            <td>${item.body || ""}</td>
+            <td>${item.user_username || "Unknown"}</td>
+            <td>${status}</td>
+            <td>${new Date(item.created).toLocaleDateString()}</td>
+            <td>
+                <button class="edit-btn" onclick="editItem(${item.id})">Edit</button>
+                <button class="delete-btn" onclick="deleteItem(${item.id})">Delete</button>
+            </td>
+        </tr>`;
+    }).join('');
+
+    // update dashboard stats
+    document.getElementById("totalItems").textContent = items.length;
+    document.getElementById("completedItems").textContent = completed;
+    document.getElementById("progressItems").textContent = in_progress;
+}
+
+/* --------------------------------------
+   EDIT ITEM
+-------------------------------------- */
+function editItem(id) {
+    window.location.href = `/content/edit-item/${id}/`;
+}
+
+/* --------------------------------------
+   DELETE ITEM
+-------------------------------------- */
+async function deleteItem(id) {
+    if (!confirm("Delete this item?")) return;
+
+    await fetch(`/content/api/items/${id}/`, { method: "DELETE" });
+    loadItems();
+}
+
+/* --------------------------------------
+   SEARCH FUNCTION
+-------------------------------------- */
+document.getElementById("searchBox").addEventListener("keyup", function () {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#itemsTable tbody tr");
+
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+    });
+});
+
+// Initial load
+loadItems();
+</script>
 
 {% endblock %}
-

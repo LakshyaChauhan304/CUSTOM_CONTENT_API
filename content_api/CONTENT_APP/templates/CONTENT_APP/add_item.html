@@ -1,43 +1,64 @@
 {% extends "CONTENT_APP/base.html" %}
+{% load static %}
+
 {% block content %}
-<h2>Add Content Item</h2>
 
-<form id="addItemForm">
-  <label>Title</label>
-  <input name="title" required />
+<link rel="stylesheet" href="{% static 'css/add_item.css' %}">
+<script defer src="{% static 'js/add_item.js' %}"></script>
 
-  <label>Body</label>
-  <textarea name="body" rows="5"></textarea>
+<div class="editor-page">
 
-  <button type="submit">Create</button>
-</form>
+    <!-- 🌙 Dark Mode Toggle -->
+    <div class="dark-toggle" onclick="toggleDarkMode()">
+        <div class="toggle-circle"></div>
+    </div>
 
-<h3>API Response</h3>
-<pre id="addItemResult"></pre>
+    <div class="editor-wrapper">
 
-<script>
-document.getElementById('addItemForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const f = e.target;
-  const payload = {
-    title: f.title.value,
-    body: f.body.value
-  };
+        <!-- 📌 Sidebar (like WordPress) -->
+        <aside class="editor-sidebar">
+            <h3>Tools</h3>
 
-  const headers = {'Content-Type': 'application/json'};
-  const token = localStorage.getItem('authToken');
-  if (token) {
-    headers['Authorization'] = 'Token ' + token;
-  }
+            <button onclick="insertHeading()" class="side-btn">Add Heading</button>
+            <button onclick="insertDivider()" class="side-btn">Divider</button>
+            <button onclick="insertChecklist()" class="side-btn">Checklist</button>
+            <button onclick="insertQuote()" class="side-btn">Quote</button>
+            <button onclick="insertWarning()" class="side-btn warn">Warning Box</button>
 
-  const res = await fetch('/content/api/items/', {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(payload)
-  });
+            <hr>
 
-  const data = await res.json();
-  document.getElementById('addItemResult').textContent = JSON.stringify(data, null, 2);
-});
-</script>
+            <h4>Document</h4>
+            <p><strong>Word Count:</strong> <span id="wordCount">0</span></p>
+            <p><strong>Status:</strong> <span id="saveStatus">Saved</span></p>
+
+        </aside>
+
+        <!-- ⭐ MAIN EDITOR AREA -->
+        <main class="editor-main">
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- Title -->
+                <input type="text" name="title" class="title-input"
+                       placeholder="Enter the title here...">
+
+                <!-- Rich Text Editor -->
+                <textarea name="body" id="editorArea"
+                          placeholder="Start writing your content..."></textarea>
+
+                <!-- 📷 Drag & Drop Media Upload -->
+                <div id="dropzone" class="media-dropzone">
+                    <p>📁 Drag & Drop to upload media<br>or click to browse</p>
+                    <input type="file" id="mediaInput" name="media" hidden>
+                </div>
+
+                <button class="publish-btn">Publish</button>
+            </form>
+
+        </main>
+
+    </div>
+</div>
+
 {% endblock %}

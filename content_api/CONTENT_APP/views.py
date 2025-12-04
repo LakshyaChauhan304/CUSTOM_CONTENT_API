@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
-from .forms import SignUpForm,LoginForm
+from .forms import SignUpForm,LoginForm,ContentItemForm
 
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
@@ -116,3 +116,19 @@ def login_view(request):
 def items_list(request):
     items = ContentItem.objects.all().select_related("user")
     return render(request, "CONTENT_APP/items.html", {"items": items})
+
+@login_required
+def add_item(request):
+    if request.method == "POST":
+        form = ContentItemForm(request.POST)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.user = request.user
+            item.save()
+            return redirect("items_list")
+
+    else:
+        form = ContentItemForm()
+
+    return render(request, "CONTENT_APP/add_item.html", {"form": form})
+

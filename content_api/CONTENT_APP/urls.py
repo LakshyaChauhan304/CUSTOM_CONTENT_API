@@ -8,7 +8,9 @@ from .views import (
     ContentItemViewSet,
     signup,
     home,
-    items_list
+    items_list,
+    add_item,
+    
 )
 
 router = DefaultRouter()
@@ -20,6 +22,7 @@ urlpatterns = [
     path("signup/", signup, name="signup"),
     path("", home, name="home"),
     path("items/", items_list, name="items_list"),
+    path("add-item/", add_item,name = "add_item"),
 
 
     # API routes
