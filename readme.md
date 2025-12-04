@@ -127,4 +127,4 @@ content_api/
 Contributions are welcome! Please fork the repository and submit a pull request.
 
 ---
-*Built with ❤️ by [Your Name]*
+*Built with ❤️ by lakshya and yuvraj
