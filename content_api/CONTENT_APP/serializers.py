@@ -51,9 +51,9 @@ class DemoPageSerializer(serializers.ModelSerializer):
 # Content Item Serializer
 # ------------------------------
 class ContentItemSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
     user_username = serializers.CharField(source='user.username', read_only=True)
 
     class Meta:
         model = ContentItem
-        fields = ['id', 'title', 'body', 'created', 'user_username']
-        fields = "__all__"
+        fields = ['id', 'title', 'body', 'created_at', 'user', 'user_username']

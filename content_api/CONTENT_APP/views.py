@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login as auth_login 
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout 
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
 from django.contrib import messages
@@ -70,6 +70,9 @@ class ContentItemViewSet(viewsets.ModelViewSet):
     queryset = ContentItem.objects.all()
     serializer_class = ContentItemSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 # --------------------------
 # UI Views (HTML pages)
 # --------------------------
@@ -78,6 +81,9 @@ def home(request):
     return render(request,"CONTENT_APP/home.html")
 
 def signup(request):
+    if request.user.is_authenticated:
+        return redirect("items_list")
+
     form = SignUpForm(request.POST or None)
     if request.method == "POST":
         if form.is_valid():
@@ -86,6 +92,9 @@ def signup(request):
     return render(request,"CONTENT_APP/signup.html",{"form": form})
 
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect("items_list")
+
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -113,6 +122,10 @@ def login_view(request):
         form = LoginForm()
 
     return render(request, "CONTENT_APP/login.html", {"form": form})
+
+def logout_view(request):
+    auth_logout(request)
+    return redirect("home")
 
 
 def items_list(request):

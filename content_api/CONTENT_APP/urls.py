@@ -4,6 +4,8 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     register_user,
     login_view,
+    login_user,
+    logout_view,
     DemoPageViewSet,
     ContentItemViewSet,
     signup,
@@ -28,5 +30,7 @@ urlpatterns = [
     # API routes
     path("register/", register_user, name="register"),
     path("login/", login_view, name="login"),
+    path("api/login/", login_user, name="api_login"),
+    path("logout/", logout_view, name="logout"),
     path("api/", include(router.urls)),
 ]

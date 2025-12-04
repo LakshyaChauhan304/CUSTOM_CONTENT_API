@@ -1,0 +1,14 @@
+{% extends "CONTENT_APP/base.html" %}
+
+{% block title %}Page Not Found{% endblock %}
+
+{% block content %}
+<div class="text-center fade-in" style="padding: 4rem 0;">
+    <div style="font-size: 4rem; margin-bottom: 1rem;">😕</div>
+    <h1 style="margin-bottom: 1rem;">Page Not Found</h1>
+    <p style="color: var(--text-muted); margin-bottom: 2rem;">
+        The page you are looking for doesn't exist or has been moved.
+    </p>
+    <a href="{% url 'home' %}" class="btn btn-primary">Go Home</a>
+</div>
+{% endblock %}

@@ -8,20 +8,21 @@
     <div class="card" style="width: 100%; max-width: 800px;">
         <h2 style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">Create New Content</h2>
         
-        <form method="POST" enctype="multipart/form-data">
+        <form id="addItemForm" onsubmit="handleAddItem(event)">
             {% csrf_token %}
             
             <div style="margin-bottom: 1.5rem;">
                 <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Title</label>
-                <input type="text" name="title" placeholder="Enter a descriptive title..." required style="font-size: 1.1rem; padding: 1rem;">
+                <input type="text" id="title" name="title" placeholder="Enter a descriptive title..." required style="font-size: 1.1rem; padding: 1rem;">
             </div>
 
             <div style="margin-bottom: 1.5rem;">
                 <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Content Body</label>
-                <textarea name="body" rows="10" placeholder="Write your content here..." style="font-family: monospace; line-height: 1.6;"></textarea>
+                <textarea id="body" name="body" rows="10" placeholder="Write your content here..." style="font-family: monospace; line-height: 1.6;"></textarea>
                 <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; text-align: right;">Markdown supported</p>
             </div>
 
+            <!-- 
             <div style="margin-bottom: 2rem;">
                 <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Media Attachment</label>
                 <div style="border: 2px dashed var(--border); border-radius: var(--radius-md); padding: 2rem; text-align: center; background: #f9fafb; cursor: pointer; transition: 0.2s;" onclick="document.getElementById('mediaInput').click()">
@@ -30,6 +31,7 @@
                     <input type="file" id="mediaInput" name="media" hidden>
                 </div>
             </div>
+            -->
 
             <div class="flex justify-end gap-4">
                 <a href="{% url 'items_list' %}" class="btn btn-outline">Cancel</a>
@@ -38,4 +40,66 @@
         </form>
     </div>
 </div>
+
+<script>
+async function handleAddItem(event) {
+    event.preventDefault();
+    
+    const title = document.getElementById('title').value;
+    const body = document.getElementById('body').value;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerText;
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Publishing...";
+
+    try {
+        const response = await fetch('/content/api/items/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                title: title,
+                body: body
+            })
+        });
+
+        if (response.ok) {
+            window.location.href = "{% url 'items_list' %}";
+        } else {
+            const data = await response.json();
+            // Create error message container if it doesn't exist
+            let errorDiv = document.getElementById('error-message');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.id = 'error-message';
+                errorDiv.style.cssText = 'background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; border: 1px solid #fecaca;';
+                const form = document.getElementById('addItemForm');
+                form.insertBefore(errorDiv, form.firstChild);
+            }
+            errorDiv.textContent = 'Error creating item: ' + (data.detail || JSON.stringify(data));
+            
+            submitBtn.disabled = false;
+            submitBtn.innerText = originalText;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        let errorDiv = document.getElementById('error-message');
+        if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.id = 'error-message';
+            errorDiv.style.cssText = 'background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; border: 1px solid #fecaca;';
+            const form = document.getElementById('addItemForm');
+            form.insertBefore(errorDiv, form.firstChild);
+        }
+        errorDiv.textContent = 'An unexpected error occurred. Please try again.';
+        
+        submitBtn.disabled = false;
+        submitBtn.innerText = originalText;
+    }
+}
+</script>
 {% endblock %}
