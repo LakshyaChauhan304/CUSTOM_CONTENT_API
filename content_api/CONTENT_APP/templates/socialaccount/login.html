@@ -1,0 +1,57 @@
+{% extends "CONTENT_APP/base.html" %}
+{% load i18n %}
+
+{% block title %}{% if process == "connect" %}Connect{% else %}Sign In{% endif %}{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card text-center fade-in">
+        <div style="margin-bottom: 1.5rem;">
+            {% if provider.id == "google" %}
+            <div
+                style="width: 50px; height: 50px; background: white; border: 1px solid #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google"
+                    style="width: 24px; height: 24px;">
+            </div>
+            {% elif provider.id == "facebook" %}
+            <div
+                style="width: 50px; height: 50px; background: #1877F2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" alt="Facebook"
+                    style="width: 24px; height: 24px; filter: brightness(0) invert(1);">
+            </div>
+            {% elif provider.id == "apple" %}
+            <div
+                style="width: 50px; height: 50px; background: black; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                <img src="https://www.svgrepo.com/show/445136/apple.svg" alt="Apple"
+                    style="width: 24px; height: 24px; filter: brightness(0) invert(1);">
+            </div>
+            {% else %}
+            <div
+                style="width: 50px; height: 50px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: white; font-size: 1.5rem;">
+                🔐
+            </div>
+            {% endif %}
+        </div>
+
+        <h2 style="margin-bottom: 0.5rem;">{% if process == "connect" %}Connect{% else %}Sign In{% endif %}</h2>
+        <p style="margin-bottom: 2rem;">
+            {% if process == "connect" %}
+            {% blocktrans with provider.name as provider %}Connect {{ provider }}{% endblocktrans %}
+            {% else %}
+            {% blocktrans with provider.name as provider %}Sign in via {{ provider }}{% endblocktrans %}
+            {% endif %}
+        </p>
+
+        <p style="margin-bottom: 2rem; color: var(--text-muted);">
+            {% trans "You are about to connect a new third party account from" %} {{ provider.name }}.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+            <button class="btn btn-primary" type="submit" style="width: 100%;">
+                {% trans "Continue" %}
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

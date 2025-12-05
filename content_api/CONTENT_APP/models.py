@@ -62,3 +62,35 @@ class HomePage(Page):
     content_panels = Page.content_panels + [
         FieldPanel('body'),
     ]
+
+class BlogIndexPage(Page):
+    intro = RichTextField(blank=True)
+
+    content_panels = Page.content_panels + [
+        FieldPanel('intro'),
+    ]
+
+    def get_context(self, request):
+        # Update context to include only published posts, ordered by reverse-chron
+        context = super().get_context(request)
+        
+        # Get all published ContentPage and DemoPage objects
+        # You might want to filter by live=True and order by first_published_at
+        content_pages = ContentPage.objects.live().public().order_by('-first_published_at')
+        demo_pages = DemoPage.objects.live().public().order_by('-first_published_at')
+        
+        # Combine them or pass them separately. For a "blog", usually it's a mix or just one type.
+        # Let's combine them into a list and sort by date if needed, or just pass both.
+        # For simplicity, let's pass them as 'blogpages'
+        
+        from itertools import chain
+        from operator import attrgetter
+        
+        blogpages = sorted(
+            chain(content_pages, demo_pages),
+            key=attrgetter('first_published_at'),
+            reverse=True
+        )
+        
+        context['blogpages'] = blogpages
+        return context

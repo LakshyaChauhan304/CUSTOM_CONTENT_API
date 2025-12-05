@@ -4,6 +4,64 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
+<style>
+    /* Dashboard Specific Styles */
+    .table-container {
+        overflow: visible !important;
+        /* Allow tooltip to overflow */
+    }
+
+    .item-row td {
+        position: relative;
+    }
+
+    /* Hover Details Popup */
+    .hover-details {
+        display: block;
+        /* Always block, but hidden with visibility/opacity */
+        visibility: hidden;
+        position: absolute;
+        left: 0;
+        top: 100%;
+        background: white;
+        border: 1px solid var(--border);
+        padding: 1.25rem;
+        z-index: 9999;
+        /* High z-index */
+        width: 320px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        border-radius: 0.75rem;
+        margin-top: 0.5rem;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+        /* Specific transitions */
+        will-change: opacity, transform;
+        /* Optimize rendering */
+        pointer-events: none;
+        /* Prevent mouse interaction flickering */
+    }
+
+    .item-row td:first-child:hover .hover-details {
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .hover-details::before {
+        content: '';
+        position: absolute;
+        top: -6px;
+        left: 20px;
+        width: 12px;
+        height: 12px;
+        background: white;
+        border-left: 1px solid var(--border);
+        border-top: 1px solid var(--border);
+        transform: rotate(45deg);
+    }
+</style>
+
 <div class="flex justify-between items-center mb-8 fade-in">
     <div>
         <h1>Dashboard</h1>
@@ -84,22 +142,40 @@
                 const createdDate = new Date(item.created_at).toLocaleDateString();
                 const updatedDate = new Date(item.updated_at).toLocaleDateString();
 
+                // Clean body text for preview
+                const rawBody = item.body || "";
+                const cleanBody = rawBody.replace(/<[^>]*>?/gm, '');
+                const previewText = cleanBody.substring(0, 100) + (cleanBody.length > 100 ? '...' : '');
+
                 return `
             <tr class="item-row" data-id="${item.id}">
-                <td style="font-weight: 600; position: relative;">
+                <td style="font-weight: 600; cursor: pointer;">
                     ${item.title}
-                    <div class="hover-details" style="display: none; position: absolute; left: 0; top: 100%; background: white; border: 1px solid var(--border); padding: 1rem; z-index: 10; width: 300px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border-radius: 0.5rem;">
-                        <strong>${item.title}</strong>
-                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;">${item.body ? item.body.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...' : 'No content'}</p>
-                        <div style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 0.5rem;">
-                            <div><strong>Created:</strong> ${createdDate}</div>
-                            <div><strong>Last Updated:</strong> ${updatedDate}</div>
-                            <div><strong>Owner:</strong> ${userDisplay}</div>
-                            <div style="margin-top: 0.25rem;"><strong>Status:</strong> <span class="badge ${badgeClass}" style="font-size: 0.7rem;">${statusLabel}</span></div>
+                    <div class="hover-details">
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-main);">${item.title}</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.5;">${previewText || 'No content preview available.'}</p>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 0.75rem;">
+                            <div>
+                                <span style="display: block; font-weight: 600; color: var(--text-main);">Created</span>
+                                ${createdDate}
+                            </div>
+                            <div>
+                                <span style="display: block; font-weight: 600; color: var(--text-main);">Modified</span>
+                                ${updatedDate}
+                            </div>
+                            <div>
+                                <span style="display: block; font-weight: 600; color: var(--text-main);">Publisher</span>
+                                ${userDisplay}
+                            </div>
+                            <div>
+                                <span style="display: block; font-weight: 600; color: var(--text-main);">Status</span>
+                                <span class="badge ${badgeClass}" style="font-size: 0.7rem; padding: 0.1rem 0.4rem;">${statusLabel}</span>
+                            </div>
                         </div>
                     </div>
                 </td>
-                <td style="color: var(--text-muted); max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.body ? item.body.replace(/<[^>]*>?/gm, '') : ""}</td>
+                <td style="color: var(--text-muted); max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${previewText}</td>
                 <td>
                     <span style="display: inline-flex; align-items: center; gap: 0.5rem;">
                         <span style="width: 24px; height: 24px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem;">👤</span>
@@ -116,20 +192,6 @@
             }).join('');
 
             updateStats(items.length, completed, in_progress);
-
-            // Add hover event listeners
-            document.querySelectorAll('.item-row').forEach(row => {
-                const titleCell = row.querySelector('td:first-child');
-                const tooltip = titleCell.querySelector('.hover-details');
-
-                titleCell.addEventListener('mouseenter', () => {
-                    tooltip.style.display = 'block';
-                });
-
-                titleCell.addEventListener('mouseleave', () => {
-                    tooltip.style.display = 'none';
-                });
-            });
 
         } catch (error) {
             console.error(error);

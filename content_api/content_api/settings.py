@@ -47,7 +47,7 @@ SECRET_KEY = "django-insecure-x6tp-3r70lqr=kp$v^u2krewn0wx-=uce10%_eqstiz1q%%xe#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -103,25 +103,31 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # Social Account Providers (Placeholders)
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Social Account Providers
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            'client_id': 'YOUR_GOOGLE_CLIENT_ID',
-            'secret': 'YOUR_GOOGLE_SECRET',
+            'client_id': os.getenv('GOOGLE_CLIENT_ID'),
+            'secret': os.getenv('GOOGLE_CLIENT_SECRET'),
             'key': ''
         }
     },
     'facebook': {
         'APP': {
-            'client_id': 'YOUR_FACEBOOK_CLIENT_ID',
-            'secret': 'YOUR_FACEBOOK_SECRET',
+            'client_id': os.getenv('FACEBOOK_CLIENT_ID'),
+            'secret': os.getenv('FACEBOOK_CLIENT_SECRET'),
             'key': ''
         }
     },
     'apple': {
         'APP': {
-            'client_id': 'YOUR_APPLE_CLIENT_ID',
-            'secret': 'YOUR_APPLE_SECRET',
+            'client_id': os.getenv('APPLE_CLIENT_ID'),
+            'secret': os.getenv('APPLE_CLIENT_SECRET'),
             'key': ''
         }
     }
@@ -140,6 +146,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
+    "CONTENT_APP.middleware.OpenNewTabMiddleware",
     "allauth.account.middleware.AccountMiddleware",
 ]
 
