@@ -17,8 +17,7 @@
     style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
     {% for item in items %}
     <div class="card"
-        style="display: flex; flex-direction: column; height: 100%; transition: transform 0.2s; cursor: pointer;"
-        onclick="window.location.href='{% url 'edit_item' item.id %}'">
+        style="display: flex; flex-direction: column; height: 100%; transition: transform 0.2s; cursor: pointer;" onclick="window.location.href='{% url 'edit_item' item.id %}'">
         <div
             style="height: 150px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0.5rem 0.5rem 0 0; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
             📝
