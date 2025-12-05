@@ -1,21 +1,29 @@
 {% extends "CONTENT_APP/base.html" %}
 {% load static %}
 
-{% block title %}New Item{% endblock %}
+{% block title %}Edit Item{% endblock %}
 
 {% block content %}
 <div class="flex justify-center fade-in">
     <div class="card" style="width: 100%; max-width: 800px;">
-        <h2 style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">Create New
-            Content</h2>
+        <h2 style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">Edit Content</h2>
 
-        <form id="addItemForm" onsubmit="handleAddItem(event)">
+        <form id="editItemForm" onsubmit="handleEditItem(event)">
             {% csrf_token %}
 
             <div style="margin-bottom: 1.5rem;">
                 <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Title</label>
                 <input type="text" id="title" name="title" placeholder="Enter a descriptive title..." required
                     style="font-size: 1.1rem; padding: 1rem;">
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Status</label>
+                <select id="status" name="status"
+                    style="font-size: 1rem; padding: 0.75rem; width: 100%; border: 1px solid var(--border); border-radius: 0.5rem;">
+                    <option value="in_progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                </select>
             </div>
 
             <div style="margin-bottom: 1.5rem;">
@@ -27,7 +35,7 @@
 
             <div class="flex justify-end gap-4">
                 <a href="{% url 'items_list' %}" class="btn btn-outline">Cancel</a>
-                <button class="btn btn-primary" type="submit" style="min-width: 150px;">Publish Item</button>
+                <button class="btn btn-primary" type="submit" style="min-width: 150px;">Save Changes</button>
             </div>
         </form>
     </div>
@@ -56,10 +64,31 @@
         }
     });
 
-    async function handleAddItem(event) {
+    const itemId = window.location.pathname.split('/').filter(Boolean).pop();
+
+    async function loadItemData() {
+        try {
+            const response = await fetch(`/content/api/items/${itemId}/`);
+            if (!response.ok) throw new Error('Failed to fetch item');
+            const data = await response.json();
+
+            document.getElementById('title').value = data.title;
+            document.getElementById('status').value = data.status || 'in_progress';
+            // Set Quill content
+            quill.clipboard.dangerouslyPasteHTML(data.body);
+        } catch (error) {
+            console.error('Error loading item:', error);
+            alert('Failed to load item data.');
+        }
+    }
+
+    loadItemData();
+
+    async function handleEditItem(event) {
         event.preventDefault();
 
         const title = document.getElementById('title').value;
+        const status = document.getElementById('status').value;
         // Get HTML content from Quill
         const body = document.querySelector('.ql-editor').innerHTML;
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -67,18 +96,19 @@
         const submitBtn = event.target.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerText;
         submitBtn.disabled = true;
-        submitBtn.innerText = "Publishing...";
+        submitBtn.innerText = "Saving...";
 
         try {
-            const response = await fetch('/content/api/items/', {
-                method: 'POST',
+            const response = await fetch(`/content/api/items/${itemId}/`, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken
                 },
                 body: JSON.stringify({
                     title: title,
-                    body: body
+                    body: body,
+                    status: status
                 })
             });
 
@@ -86,32 +116,13 @@
                 window.location.href = "{% url 'items_list' %}";
             } else {
                 const data = await response.json();
-                // Create error message container if it doesn't exist
-                let errorDiv = document.getElementById('error-message');
-                if (!errorDiv) {
-                    errorDiv = document.createElement('div');
-                    errorDiv.id = 'error-message';
-                    errorDiv.style.cssText = 'background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; border: 1px solid #fecaca;';
-                    const form = document.getElementById('addItemForm');
-                    form.insertBefore(errorDiv, form.firstChild);
-                }
-                errorDiv.textContent = 'Error creating item: ' + (data.detail || JSON.stringify(data));
-
+                alert('Error updating item: ' + (data.detail || JSON.stringify(data)));
                 submitBtn.disabled = false;
                 submitBtn.innerText = originalText;
             }
         } catch (error) {
             console.error('Error:', error);
-            let errorDiv = document.getElementById('error-message');
-            if (!errorDiv) {
-                errorDiv = document.createElement('div');
-                errorDiv.id = 'error-message';
-                errorDiv.style.cssText = 'background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; border: 1px solid #fecaca;';
-                const form = document.getElementById('addItemForm');
-                form.insertBefore(errorDiv, form.firstChild);
-            }
-            errorDiv.textContent = 'An unexpected error occurred. Please try again.';
-
+            alert('An unexpected error occurred. Please try again.');
             submitBtn.disabled = false;
             submitBtn.innerText = originalText;
         }

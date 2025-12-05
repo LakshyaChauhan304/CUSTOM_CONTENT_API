@@ -40,5 +40,25 @@ class ContentItem(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     body = models.TextField(blank=True)
+    status = models.CharField(
+        max_length=20,
+        choices=[('in_progress', 'In Progress'), ('completed', 'Completed')],
+        default='in_progress'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+from wagtail.fields import StreamField
+from . import blocks
+
+class HomePage(Page):
+    body = StreamField([
+        ('heading', blocks.HeadingBlock()),
+        ('paragraph', blocks.ParagraphBlock()),
+        ('image', blocks.ImageBlock()),
+        ('cta', blocks.CtaBlock()),
+    ], use_json_field=True)
+
+    content_panels = Page.content_panels + [
+        FieldPanel('body'),
+    ]

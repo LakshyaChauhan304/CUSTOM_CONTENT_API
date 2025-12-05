@@ -1,0 +1,56 @@
+{% extends "CONTENT_APP/base.html" %}
+{% load static %}
+
+{% block title %}My Work{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-8 fade-in">
+    <div>
+        <h1>My Work</h1>
+        <p>Showcase of your completed projects.</p>
+    </div>
+    <a href="{% url 'items_list' %}" class="btn btn-outline">Back to Dashboard</a>
+</div>
+
+{% if items %}
+<div class="grid-container fade-in"
+    style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
+    {% for item in items %}
+    <div class="card"
+        style="display: flex; flex-direction: column; height: 100%; transition: transform 0.2s; cursor: pointer;"
+        onclick="window.location.href='{% url 'edit_item' item.id %}'">
+        <div
+            style="height: 150px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0.5rem 0.5rem 0 0; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+            📝
+        </div>
+        <div style="padding: 1.5rem; flex: 1; display: flex; flex-direction: column;">
+            <h3 style="margin-bottom: 0.5rem;">{{ item.title }}</h3>
+            <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; flex: 1;">
+                {{ item.body|striptags|truncatechars:100 }}
+            </div>
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem;">
+                <span>Updated: {{ item.updated_at|date:"M d, Y" }}</span>
+                <span class="badge badge-success">Completed</span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center fade-in"
+    style="padding: 4rem; background: #f9fafb; border-radius: 1rem; border: 2px dashed var(--border);">
+    <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+    <h3>No completed work yet</h3>
+    <p style="color: var(--text-muted); margin-bottom: 2rem;">Finish some items in your dashboard to see them here!</p>
+    <a href="{% url 'items_list' %}" class="btn btn-primary">Go to Dashboard</a>
+</div>
+{% endif %}
+
+<style>
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+</style>
+{% endblock %}

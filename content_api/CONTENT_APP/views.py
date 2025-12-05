@@ -146,3 +146,35 @@ def add_item(request):
         form = ContentItemForm()
 
     return render(request, "CONTENT_APP/add_item.html", {"form": form})
+
+@login_required
+def edit_item(request, pk):
+    try:
+        item = ContentItem.objects.get(pk=pk, user=request.user)
+    except ContentItem.DoesNotExist:
+        return redirect("items_list")
+
+    if request.method == "PUT":
+        import json
+        data = json.loads(request.body)
+        item.title = data.get("title", item.title)
+        item.body = data.get("body", item.body)
+        item.status = data.get("status", item.status)
+        item.save()
+        return JsonResponse({"message": "Item updated successfully"})
+    
+    if request.method == "GET" and request.headers.get('content-type') == 'application/json':
+        return JsonResponse({
+            "title": item.title,
+            "body": item.body,
+            "status": item.status
+        })
+
+    return render(request, "CONTENT_APP/edit_item.html", {"item": item})
+
+@login_required
+def work_list(request):
+    items = ContentItem.objects.filter(user=request.user, status='completed').order_by('-updated_at')
+    return render(request, "CONTENT_APP/work.html", {"items": items})
+
+from django.http import JsonResponse

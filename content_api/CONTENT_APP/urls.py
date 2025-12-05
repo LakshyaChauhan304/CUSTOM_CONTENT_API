@@ -11,7 +11,10 @@ from .views import (
     signup,
     home,
     items_list,
+    items_list,
     add_item,
+    edit_item,
+    work_list,
     
 )
 
@@ -25,6 +28,8 @@ urlpatterns = [
     path("", home, name="home"),
     path("items/", items_list, name="items_list"),
     path("add-item/", add_item,name = "add_item"),
+    path("edit-item/<int:pk>/", edit_item, name="edit_item"),
+    path("work/", work_list, name="work_list"),
 
 
     # API routes

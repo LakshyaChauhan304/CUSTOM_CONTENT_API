@@ -17,6 +17,7 @@ api_router.register_endpoint('pages', PagesAPIViewSet)
 urlpatterns = [
     path('django-admin/', admin.site.urls),
     path('content/', include('CONTENT_APP.urls')),   # all app routes
+    path('accounts/', include('allauth.urls')),      # Allauth routes
     path('admin/', include(wagtailadmin_urls)),      # Wagtail admin
     path('documents/', include(wagtaildocs_urls)),
     path('api/v2/', api_router.urls),

@@ -47,113 +47,141 @@
             </tr>
         </thead>
         <tbody id="itemsBody">
-            <tr><td colspan="6" class="text-center">Loading content...</td></tr>
+            <tr>
+                <td colspan="6" class="text-center">Loading content...</td>
+            </tr>
         </tbody>
     </table>
 </div>
 
 <script>
-async function loadItems() {
-    try {
-        const res = await fetch('/content/api/items/');
-        if (!res.ok) throw new Error('Failed to fetch items');
-        const data = await res.json();
+    async function loadItems() {
+        try {
+            const res = await fetch('/content/api/items/');
+            if (!res.ok) throw new Error('Failed to fetch items');
+            const data = await res.json();
 
-        const items = Array.isArray(data) ? data : (data.results || []);
-        const tbody = document.getElementById('itemsBody');
+            const items = Array.isArray(data) ? data : (data.results || []);
+            const tbody = document.getElementById('itemsBody');
 
-        if (!items.length) {
-            tbody.innerHTML = "<tr><td colspan='6' class='text-center' style='padding: 3rem;'>No items found. Create your first one!</td></tr>";
-            updateStats(0, 0, 0);
-            return;
-        }
+            if (!items.length) {
+                tbody.innerHTML = "<tr><td colspan='6' class='text-center' style='padding: 3rem;'>No items found. Create your first one!</td></tr>";
+                updateStats(0, 0, 0);
+                return;
+            }
 
-        let completed = 0;
-        let in_progress = 0;
+            let completed = 0;
+            let in_progress = 0;
 
-        tbody.innerHTML = items.map(item => {
-            const status = item.status || "in-progress"; // Assuming status field exists or default
-            if (status === "completed") completed++;
-            else in_progress++;
+            tbody.innerHTML = items.map(item => {
+                const status = item.status || "in_progress";
+                const statusLabel = status === 'completed' ? 'Completed' : 'In Progress';
+                if (status === "completed") completed++;
+                else in_progress++;
 
-            const badgeClass = status === 'completed' ? 'badge-success' : 'badge-warning';
-            const userDisplay = item.user_username || "Unknown";
-            const dateDisplay = new Date(item.created_at || item.created).toLocaleDateString();
+                const badgeClass = status === 'completed' ? 'badge-success' : 'badge-warning';
+                const userDisplay = item.user_username || "Unknown";
+                const createdDate = new Date(item.created_at).toLocaleDateString();
+                const updatedDate = new Date(item.updated_at).toLocaleDateString();
 
-            return `
-            <tr>
-                <td style="font-weight: 600;">${item.title}</td>
-                <td style="color: var(--text-muted); max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.body || ""}</td>
+                return `
+            <tr class="item-row" data-id="${item.id}">
+                <td style="font-weight: 600; position: relative;">
+                    ${item.title}
+                    <div class="hover-details" style="display: none; position: absolute; left: 0; top: 100%; background: white; border: 1px solid var(--border); padding: 1rem; z-index: 10; width: 300px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border-radius: 0.5rem;">
+                        <strong>${item.title}</strong>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;">${item.body ? item.body.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...' : 'No content'}</p>
+                        <div style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 0.5rem;">
+                            <div><strong>Created:</strong> ${createdDate}</div>
+                            <div><strong>Last Updated:</strong> ${updatedDate}</div>
+                            <div><strong>Owner:</strong> ${userDisplay}</div>
+                            <div style="margin-top: 0.25rem;"><strong>Status:</strong> <span class="badge ${badgeClass}" style="font-size: 0.7rem;">${statusLabel}</span></div>
+                        </div>
+                    </div>
+                </td>
+                <td style="color: var(--text-muted); max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.body ? item.body.replace(/<[^>]*>?/gm, '') : ""}</td>
                 <td>
                     <span style="display: inline-flex; align-items: center; gap: 0.5rem;">
                         <span style="width: 24px; height: 24px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem;">👤</span>
                         ${userDisplay}
                     </span>
                 </td>
-                <td><span class="badge ${badgeClass}">${status}</span></td>
-                <td>${dateDisplay}</td>
+                <td><span class="badge ${badgeClass}">${statusLabel}</span></td>
+                <td>${createdDate}</td>
                 <td style="text-align: right;">
-                    <button class="btn btn-outline" style="padding: 0.25rem 0.75rem; font-size: 0.8rem;" onclick="editItem(${item.id})">Edit</button>
+                    <a href="/content/edit-item/${item.id}/" class="btn btn-outline" style="padding: 0.25rem 0.75rem; font-size: 0.8rem; text-decoration: none;">Edit</a>
                     <button class="btn btn-danger" style="padding: 0.25rem 0.75rem; font-size: 0.8rem; margin-left: 0.5rem;" onclick="deleteItem(${item.id})">Delete</button>
                 </td>
             </tr>`;
-        }).join('');
+            }).join('');
 
-        updateStats(items.length, completed, in_progress);
+            updateStats(items.length, completed, in_progress);
 
-    } catch (error) {
-        console.error(error);
-        document.getElementById('itemsBody').innerHTML = "<tr><td colspan='6' class='text-center error'>Error loading items. Please try again.</td></tr>";
-    }
-}
+            // Add hover event listeners
+            document.querySelectorAll('.item-row').forEach(row => {
+                const titleCell = row.querySelector('td:first-child');
+                const tooltip = titleCell.querySelector('.hover-details');
 
-function updateStats(total, completed, progress) {
-    document.getElementById("totalItems").textContent = total;
-    document.getElementById("completedItems").textContent = completed;
-    document.getElementById("progressItems").textContent = progress;
-}
+                titleCell.addEventListener('mouseenter', () => {
+                    tooltip.style.display = 'block';
+                });
 
-function editItem(id) {
-    // Ideally this would go to an edit page, for now we can just alert or redirect if route exists
-    // window.location.href = `/content/edit-item/${id}/`;
-    alert("Edit feature coming soon!");
-}
+                titleCell.addEventListener('mouseleave', () => {
+                    tooltip.style.display = 'none';
+                });
+            });
 
-async function deleteItem(id) {
-    if (!confirm("Are you sure you want to delete this item?")) return;
-    
-    // Get CSRF token
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
-
-    try {
-        const res = await fetch(`/content/api/items/${id}/`, { 
-            method: "DELETE",
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}'
-            }
-        });
-        
-        if (res.ok) {
-            loadItems();
-        } else {
-            alert("Failed to delete item.");
+        } catch (error) {
+            console.error(error);
+            document.getElementById('itemsBody').innerHTML = "<tr><td colspan='6' class='text-center error'>Error loading items. Please try again.</td></tr>";
         }
-    } catch (e) {
-        console.error(e);
-        alert("Error deleting item.");
     }
-}
 
-document.getElementById("searchBox").addEventListener("keyup", function () {
-    const filter = this.value.toLowerCase();
-    const rows = document.querySelectorAll("#itemsTable tbody tr");
+    function updateStats(total, completed, progress) {
+        document.getElementById("totalItems").textContent = total;
+        document.getElementById("completedItems").textContent = completed;
+        document.getElementById("progressItems").textContent = progress;
+    }
 
-    rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        row.style.display = text.includes(filter) ? "" : "none";
+    function editItem(id) {
+        window.location.href = `/content/edit-item/${id}/`;
+    }
+
+    async function deleteItem(id) {
+        if (!confirm("Are you sure you want to delete this item?")) return;
+
+        // Get CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+
+        try {
+            const res = await fetch(`/content/api/items/${id}/`, {
+                method: "DELETE",
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            });
+
+            if (res.ok) {
+                loadItems();
+            } else {
+                alert("Failed to delete item.");
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Error deleting item.");
+        }
+    }
+
+    document.getElementById("searchBox").addEventListener("keyup", function () {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll("#itemsTable tbody tr");
+
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            row.style.display = text.includes(filter) ? "" : "none";
+        });
     });
-});
 
-loadItems();
+    loadItems();
 </script>
 {% endblock %}
