@@ -10,7 +10,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .models import DemoPage, ContentItem
 from .serializers import (
@@ -67,8 +67,11 @@ class DemoPageViewSet(viewsets.ReadOnlyModelViewSet):
 # Content Item API (CRUD)
 # --------------------------
 class ContentItemViewSet(viewsets.ModelViewSet):
-    queryset = ContentItem.objects.all()
     serializer_class = ContentItemSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return ContentItem.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
