@@ -7,7 +7,7 @@ services:
   - type: web
     name: content-api
     env: python
-    rootDirectory: content_api
+    rootDir: content_api
     buildCommand: "./build.sh"
     startCommand: "gunicorn content_api.wsgi:application"
     envVars:
