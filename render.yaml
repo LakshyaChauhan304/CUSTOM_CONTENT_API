@@ -8,7 +8,7 @@ services:
     name: content-api
     env: python
     rootDir: content_api
-    buildCommand: "./build.sh"
+    buildCommand: "chmod +x build.sh && ./build.sh"
     startCommand: "gunicorn content_api.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
