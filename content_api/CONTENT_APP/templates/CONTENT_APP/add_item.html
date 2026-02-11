@@ -5,8 +5,8 @@
 
 {% block content %}
 <div class="flex justify-center fade-in">
-    <div class="card" style="width: 100%; max-width: 800px;">
-        <h2 style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">Create New
+    <div class="glass-card" style="width: 100%; max-width: 800px;">
+        <h2 style="margin-bottom: 2rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">Create New
             Content</h2>
 
         <form id="addItemForm" onsubmit="handleAddItem(event)">
@@ -15,7 +15,7 @@
             <div style="margin-bottom: 1.5rem;">
                 <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Title</label>
                 <input type="text" id="title" name="title" placeholder="Enter a descriptive title..." required
-                    style="font-size: 1.1rem; padding: 1rem;">
+                    class="form-control" style="font-size: 1.1rem; padding: 1rem;">
             </div>
 
             <div style="margin-bottom: 1.5rem;">

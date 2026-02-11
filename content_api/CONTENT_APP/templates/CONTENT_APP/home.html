@@ -1,43 +1,41 @@
 {% extends "CONTENT_APP/base.html" %}
 {% load static %}
 
-{% block title %}Welcome to ContentCMS{% endblock %}
+{% block title %}Welcome to ContentHub{% endblock %}
 
 {% block content %}
-<div class="text-center" style="padding: 4rem 0;">
-    <h1 style="font-size: 3.5rem; margin-bottom: 1.5rem; background: linear-gradient(to right, var(--primary), var(--accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
-        Manage Your Content with Ease
-    </h1>
-    <p style="font-size: 1.25rem; max-width: 700px; margin: 0 auto 2.5rem; color: var(--text-muted);">
+<div class="hero-section">
+    <h1 class="hero-title">Manage Your Content with Ease</h1>
+    <p class="hero-text">
         A powerful, headless-ready CMS built for speed and flexibility. 
         Create, organize, and deliver digital experiences anywhere.
     </p>
     
     <div class="flex justify-center gap-4">
         {% if user.is_authenticated %}
-            <a href="{% url 'items_list' %}" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem;">Go to Dashboard</a>
+            <a href="{% url 'items_list' %}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">Go to Dashboard</a>
         {% else %}
-            <a href="{% url 'signup' %}" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem;">Get Started for Free</a>
-            <a href="{% url 'login' %}" class="btn btn-outline" style="padding: 1rem 2rem; font-size: 1.1rem;">Live Demo</a>
+            <a href="{% url 'signup' %}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">Get Started for Free</a>
+            <a href="{% url 'login' %}" class="btn btn-outline" style="font-size: 1.1rem; padding: 1rem 2rem;">Live Demo</a>
         {% endif %}
     </div>
 </div>
 
-<div class="dashboard-grid" style="margin-top: 4rem;">
-    <div class="card text-center">
+<div class="grid-3">
+    <div class="glass-card text-center">
         <div style="font-size: 2.5rem; margin-bottom: 1rem;">🚀</div>
         <h3>Fast & Efficient</h3>
-        <p>Built on Django for high performance and rapid development.</p>
+        <p style="color: #cbd5e1;">Built on Django for high performance and rapid development.</p>
     </div>
-    <div class="card text-center">
+    <div class="glass-card text-center">
         <div style="font-size: 2.5rem; margin-bottom: 1rem;">🎨</div>
         <h3>Modern UI</h3>
-        <p>Beautiful, responsive interface designed for the best user experience.</p>
+        <p style="color: #cbd5e1;">Beautiful, responsive interface designed for the best user experience.</p>
     </div>
-    <div class="card text-center">
+    <div class="glass-card text-center">
         <div style="font-size: 2.5rem; margin-bottom: 1rem;">🔌</div>
         <h3>API Ready</h3>
-        <p>Headless capabilities to serve content to any platform or device.</p>
+        <p style="color: #cbd5e1;">Headless capabilities to serve content to any platform or device.</p>
     </div>
 </div>
 {% endblock %}

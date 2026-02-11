@@ -27,7 +27,10 @@ STATIC_ROOT = BASE_DIR/ "staticfiles"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR.parent / "CONTENT_APP" / "templates"],   # <--- ADD THIS
+        "DIRS": [
+            BASE_DIR.parent / "templates",
+            BASE_DIR / "templates", # Also look in project root templates if any
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

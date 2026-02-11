@@ -9,11 +9,12 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "default-insecure-key-for-dev")
 DEBUG = 'RENDER' not in os.environ
 
 # Allowed Hosts
+# Allowed Hosts
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS = [RENDER_EXTERNAL_HOSTNAME]
+    ALLOWED_HOSTS = [RENDER_EXTERNAL_HOSTNAME, '.onrender.com']
 else:
-    ALLOWED_HOSTS = []
+    ALLOWED_HOSTS = ['*'] # Default to allow all if not on Render (e.g. dev)
 
 # Security Settings
 if not DEBUG:
@@ -23,12 +24,14 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Database
 DATABASES = {
     "default": dj_database_url.config(
         default="sqlite:///" + str(BASE_DIR / "db.sqlite3"),
         conn_max_age=600,
+        conn_health_checks=True,
     )
 }
 
@@ -40,6 +43,6 @@ STORAGES = {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }

@@ -7,31 +7,31 @@ User = get_user_model()
 class LoginForm(forms.Form):
     username_or_email = forms.CharField(widget=forms.TextInput(attrs={
         "placeholder": "Username or Email",
-        "class": "login-field"
+        "class": "form-control"
     }))
     password = forms.CharField(widget=forms.PasswordInput(attrs={
         "placeholder": "Password",
-        "class": "login-field"
+        "class": "form-control"
     }))
 
 
 
 class SignUpForm(forms.ModelForm):
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': 'Password'})
+        widget=forms.PasswordInput(attrs={'placeholder': 'Password', 'class': 'form-control'})
     )
     confirm_password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': 'Confirm Password'})
+        widget=forms.PasswordInput(attrs={'placeholder': 'Confirm Password', 'class': 'form-control'})
     )
 
     class Meta:
         model = User
         fields = ["first_name", "last_name", "email", "username"]
         widgets = {
-            "first_name": forms.TextInput(attrs={"placeholder": "First Name"}),
-            "last_name": forms.TextInput(attrs={"placeholder": "Last Name"}),
-            "email": forms.EmailInput(attrs={"placeholder": "Email"}),
-            "username": forms.TextInput(attrs={"placeholder": "Username"}),
+            "first_name": forms.TextInput(attrs={"placeholder": "First Name", "class": "form-control"}),
+            "last_name": forms.TextInput(attrs={"placeholder": "Last Name", "class": "form-control"}),
+            "email": forms.EmailInput(attrs={"placeholder": "Email", "class": "form-control"}),
+            "username": forms.TextInput(attrs={"placeholder": "Username", "class": "form-control"}),
         }
 
     def save(self, commit=True):
@@ -49,10 +49,11 @@ class ContentItemForm(forms.ModelForm):
         widgets = {
             "title": forms.TextInput(attrs={
                 "placeholder": "Title",
-                "class": "input-field"
+                "class": "form-control"
             }),
             "body": forms.Textarea(attrs={
                 "placeholder": "Description",
-                "class": "input-field textarea-field"
+                "class": "form-control",
+                "rows": 4
             }),
         }

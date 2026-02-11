@@ -1,83 +1,36 @@
 {% extends "CONTENT_APP/base.html" %}
-{% load static %}
-
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="auth-wrapper">
-    <div class="auth-card text-center fade-in">
-        <div style="margin-bottom: 1.5rem;">
-            <div
-                style="width: 50px; height: 50px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: white; font-size: 1.5rem;">
-                🔐
-            </div>
-        </div>
-
-        <h2 style="margin-bottom: 0.5rem;">Welcome Back</h2>
-        <p style="margin-bottom: 2rem;">Sign in to continue to your dashboard</p>
-
-        {% load socialaccount %}
-        <div style="margin-bottom: 2rem;">
-            <a href="{% provider_login_url 'google' %}" class="btn"
-                style="display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: 0.75rem; background: white; color: #757575; border: 1px solid #ddd; padding: 0.75rem; font-weight: 500; transition: all 0.2s;">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google"
-                    style="width: 20px; height: 20px; margin-right: 0.75rem;">
-                Continue with Google
-            </a>
-            <a href="{% provider_login_url 'facebook' %}" class="btn"
-                style="display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: 0.75rem; background: #1877F2; color: white; border: 1px solid #1877F2; padding: 0.75rem; font-weight: 500; transition: all 0.2s;">
-                <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" alt="Facebook"
-                    style="width: 20px; height: 20px; margin-right: 0.75rem; filter: brightness(0) invert(1);">
-                Continue with Facebook
-            </a>
-            <a href="{% provider_login_url 'apple' %}" class="btn"
-                style="display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: 0.75rem; background: black; color: white; border: 1px solid black; padding: 0.75rem; font-weight: 500; transition: all 0.2s;">
-                <img src="https://www.svgrepo.com/show/445136/apple.svg" alt="Apple"
-                    style="width: 20px; height: 20px; margin-right: 0.75rem; filter: brightness(0) invert(1);">
-                Continue with Apple
-            </a>
-            <div style="display: flex; align-items: center; margin: 1.5rem 0;">
-                <div style="flex: 1; height: 1px; background: var(--border);"></div>
-                <span style="padding: 0 1rem; color: var(--text-muted); font-size: 0.9rem;">OR</span>
-                <div style="flex: 1; height: 1px; background: var(--border);"></div>
-            </div>
-        </div>
-
-        <form method="POST" style="text-align: left;">
+<div class="auth-container">
+    <div class="glass-card auth-card">
+        <h2 class="auth-title">Welcome Back</h2>
+        
+        <form method="post">
             {% csrf_token %}
-
-            <div style="margin-bottom: 1rem;">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Username or Email</label>
-                {{ form.username_or_email }}
-            </div>
-
-            <div style="margin-bottom: 1.5rem;">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Password</label>
-                {{ form.password }}
-            </div>
-
-            {% if form.errors %}
-            <div class="card"
-                style="padding: 0.75rem; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; margin-bottom: 1.5rem;">
-                {% for field, errors in form.errors.items %}
-                {% for error in errors %}
-                <p style="margin: 0; font-size: 0.9rem;">{{ error }}</p>
-                {% endfor %}
-                {% endfor %}
-                {% if form.non_field_errors %}
-                {% for error in form.non_field_errors %}
-                <p style="margin: 0; font-size: 0.9rem;">{{ error }}</p>
-                {% endfor %}
+            {% if form.non_field_errors %}
+                <div style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); color: #fca5a5; padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            
+            {% for field in form %}
+            <div class="form-group">
+                <label class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <div style="color: #fca5a5; font-size: 0.875rem; margin-top: 0.25rem;">
+                    {{ field.errors }}
+                </div>
                 {% endif %}
             </div>
-            {% endif %}
-
-            <button class="btn btn-primary" type="submit" style="width: 100%;">Sign In</button>
+            {% endfor %}
+            
+            <button type="submit" class="btn btn-primary w-full">Login</button>
         </form>
-
-        <p style="margin-top: 1.5rem; font-size: 0.9rem;">
-            Don't have an account? <a href="{% url 'signup' %}" class="text-primary" style="font-weight: 600;">Sign
-                up</a>
+        
+        <p class="text-center mt-4" style="color: #cbd5e1;">
+            Don't have an account? <a href="{% url 'signup' %}">Sign up</a>
         </p>
     </div>
 </div>
